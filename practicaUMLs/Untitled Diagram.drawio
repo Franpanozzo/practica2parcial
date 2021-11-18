@@ -1,1 +1,21 @@
-<mxfile host="app.diagrams.net" modified="2021-11-18T12:35:21.428Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" version="15.7.4" etag="GYDqa-q2G2FiYqFKyn_O" type="github"><diagram id="yPwY4_FvbW10Hhk1ij5i">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2021-11-18T15:26:45.785Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" etag="4nmQoeEKQcsGmPY-MlzX" version="15.7.4" type="github">
+  <diagram id="yPwY4_FvbW10Hhk1ij5i" name="Page-1">
+    <mxGraphModel dx="1217" dy="652" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="IbHTiJHsRho8JSPdauSb-1" value="&lt;div style=&quot;box-sizing: border-box ; width: 100% ; background: #e4e4e4 ; padding: 2px&quot;&gt;&lt;font color=&quot;#000000&quot;&gt;Paquete_Viaje&lt;/font&gt;&lt;/div&gt;&lt;table style=&quot;width: 100% ; font-size: 1em&quot; cellpadding=&quot;2&quot; cellspacing=&quot;0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;br&gt;FK&lt;br&gt;FK&lt;/td&gt;&lt;td&gt;Id&lt;br&gt;nroPaquete&lt;br&gt;nroViaje&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;br&gt;&lt;/td&gt;&lt;td&gt;cantidad&lt;br&gt;precioFinalPaquete&lt;br&gt;&lt;br&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;br&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;fillColor=#5D7F99;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="290" y="250" width="180" height="102.5" as="geometry" />
+        </mxCell>
+        <mxCell id="IbHTiJHsRho8JSPdauSb-2" value="" style="endArrow=ERone;html=1;endSize=12;startArrow=ERmany;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;endFill=0;strokeColor=#736CA8;fontColor=#1A1A1A;" edge="1" parent="1">
+          <mxGeometry x="-1" y="-92" relative="1" as="geometry">
+            <mxPoint x="379.5" y="390" as="sourcePoint" />
+            <mxPoint x="379.5" y="498.75" as="targetPoint" />
+            <mxPoint x="57" y="-85" as="offset" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
