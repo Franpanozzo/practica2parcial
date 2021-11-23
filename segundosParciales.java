@@ -145,7 +145,7 @@ conoce a una lista de estas, ademas de que a lo sumo te quedan 2 atributos
 en null nomas y evito JOINS solamente por 1 campo*/
 
 @Entity
-@@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @DiscriminatorColumn(name = "tipo", length = 1)
 abstract class FuerzaMilitar extends EntidadPersistente {
 }
@@ -202,7 +202,7 @@ integrantes, ademas de que solo hay una subclase la cual no tiene atributos prop
 seria tener un join traerme un ID nomas, perdiendo en performance
 */
 @Entity
-@@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @DiscriminatorColumn(name = "tipo", length = 1)
 /*@DiscriminatorValue("S") Por si solo se instancia un sobreviviente, ya que no es abstract class
 MAL: Si esta en NULL el tipo quiere decir que es un sobreviviente nomas y ya esta */
@@ -250,7 +250,7 @@ MENOS QUE TIENEN POCOS ATRIBUTOS
 */
 
 @Entity
-@@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @DiscriminatorColumn(name = "tipo", length = 1)
 abstract class Lugar extends EntidadPersistente {
     @OneToMany
@@ -295,6 +295,9 @@ B)
 
 --------------PARCIAL REKOMENDASHI----------------
 
+A)
+1)
+
 @MappedSuperclass
 public abstract class EntidadPersistente {
     @Id
@@ -324,7 +327,7 @@ conoce a esta, ademas de que a lo sumo te quedan 2 atributos
 en null y evito JOINS solamente por 1 o 2 campos*/
 
 @Entity 
-@@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @DiscriminatorColumn(name = "tipo", length = 1)
 abstract class TipoDePedido extends EntidadPersistente {
 }
@@ -343,15 +346,82 @@ class Grupal extend TipoDePedido {
 }
 
 //CatalogoDePiezas es un servicio, por lo tanto no lo persisto
-
+//@Entity 
+//EL SET TAMPOCO SE PERSISTIRIA PORQUE COMO LAS SUGERENCIAS, SE CREAN ON THE FLY
 class Set extends EntidadPersistente {
-    
+    //Porque no una seleccion podria estar en varios sets
+    //@ManyToMany
+    selecciones
 }
 
+@Entity
+class Seleccion extends EntidadPersistente {
+    cantidad
+
+    @Embedded 
+    pieza
+}
+
+//Embebo la clase pieza a la seleccion ya que es un Value Object ahorrandome un Join
+
+@Embeddable //MALLLL, SOLO SE EMBEBE OneToOne
+class Pieza {
+    nombre
+    precio
+    imagen
+    
+    @Enumerated
+    tipoCoccion
+
+    /*Ingrediente tambien es un Value Object pero lo dejo como OneToMany para que trate de 
+    manera mas optima los update, ya que si pongo embadble, elementCollection cuando actualize
+    borra todo y lo vuelve a insertar. Alfinal, termino haciendo la relacion ManyToMany porque
+    podria ser que un ingrediente este en varias piezas whynot?*/
+
+    @ManyToMany
+    ingredientes
+}
+
+@Entity
+class Ingrediente extends EntidadPersistente {
+    nombre
+    @Enumerated
+    caregoria
+}
+
+2)
+La decision que voy a tomar es la de materializar esta dependencia temporal, ya que las mas 
+pedidas van a ir variando y podria hacer una tabla la cual contenga:
+
+---masPedidas---           La pieza estaria embebida
+nombre
+precio
+imagen
+diaSemana
+posicion    //Su posicion en el top 10
 
 
+De esta manera quedarian precalculadas las piezas mas pedidas en el caso de que se quieran usar
+en el algoritmo de recomendar
 
 
+B)
+Primero una pantalla donde puedas elegir tu categoria preferida
+- Ingresar categoria y coccion preferida: GET /preferencias   Devuelve todas las categorias, cocciones  para elegir 
+Request que se manda: POST /pedido   Un nuevo pedido
+                        body 
+                            { categorias
+                            cocciones }
 
+Se guarda y se redirecciona a elegir el tipo de pedido
 
+GET /tiposPedidos
 
+metodo mas correcto ya que se modifica parcialmente la preferencia
+request: PATCH /pedido/:id  //o UPDATE tambien podria ser
+
+Por limitacion de formulario: POST /pedido/:id
+
+Redirecciona a mostrar el set recomendado
+
+GET /pedido/:id/setRecomendado
