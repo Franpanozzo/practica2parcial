@@ -561,3 +561,27 @@ que consultar a la entidad Bebida haciendo un Order By por ese campo. Y para pod
 la consistencia con los nuevos pedidos que se vayan ingresando podria haber un trigger 
 en Pedido que cada vez que se ingrese uno se actualiza el campo cantidad en la bebida
 correspondiente.
+  
+C)
+1. GET /locales/
+Usuario obtenido a traves de la session
+
+2. y 3. Como los query params se usan para filtrar a los recursos, en este caso los recursos
+son los locales, voy a usarlos.
+ 
+    GET /locales
+    - query params (tipoBebida, palabraClave)
+    - ejemplo:
+        /locales?tipoBebida=trago&palabraClave=mojito
+Usuario obtenido a traves de la session
+
+4. 
+a) GET /locales/:id
+
+b) PATCH /usuario/:id
+Ese boton tira esta request, la cual va a modificar parcialmente al usuario, cambiandole
+el tipo de suscripcion nomas 
+
+por limitacion de formulario: 
+POST /usuario/:id
+
