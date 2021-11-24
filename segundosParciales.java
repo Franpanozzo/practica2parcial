@@ -402,13 +402,13 @@ posicion    //Su posicion en el top 10
 
 
 De esta manera quedarian precalculadas las piezas mas pedidas en el caso de que se quieran usar
-en el algoritmo de recomendar
+en el algoritmo de recomendar. Tengo en una tabla todo lo necesario para calcular
 
 
 B)
 Primero una pantalla donde puedas elegir tu categoria preferida
 - Ingresar categoria y coccion preferida: GET /preferencias   Devuelve todas las categorias, cocciones  para elegir 
-Request que se manda: POST /pedido   Un nuevo pedido
+Request que se manda: POST /pedidos   Un nuevo pedido
                         body 
                             { categorias
                             cocciones }
@@ -417,11 +417,147 @@ Se guarda y se redirecciona a elegir el tipo de pedido
 
 GET /tiposPedidos
 
-metodo mas correcto ya que se modifica parcialmente la preferencia
-request: PATCH /pedido/:id  //o UPDATE tambien podria ser
+metodo mas correcto ya que se modifica parcialmente el pedido
+request: PATCH /pedidos/:id  //o UPDATE tambien podria ser pero solo se modifican ciertos campos
 
 Por limitacion de formulario: POST /pedido/:id
 
 Redirecciona a mostrar el set recomendado
 
-GET /pedido/:id/setRecomendado
+GET /pedidos/:id/setRecomendado
+
+
+--------------PARCIAL GINPASS----------------
+
+A)
+
+@MappedSuperclass
+public abstract class EntidadPersistente {
+    @Id
+    @GeneratedValue
+    private long Id;
+}
+
+/*No persisto la busqueda ya que como dice el enunciado no es importante consultar todavia,
+ademas de que va a ser algo que se va a crear On The Fly, por lo tanto no lo persisto*/
+
+@Entity
+class Suscripcion extends EntidadPersistente {
+    cuotaMinima
+    cuotaMaxima
+
+    @ManyToMany
+    localesIncluidos
+}
+
+@Entity
+class Usuario extends EntidadPersistente {
+    @ManyToOne
+    suscrpcion
+
+    @Embedded
+    direccion
+}
+
+/*Embebo la direccion ya que al ser un value object, es una clase concreta y hay una relacion 
+OneToOne, lo embebo para ahorrarme un JOIN, ademas de que capaz se quiera tener una copia
+historica del domicilio de los clientes */
+
+@Embeddable
+class Direccion {
+    calle
+    altura
+    longitud
+    latitud
+}
+
+/* Debido a que se hacen consultas polimorficas ya que la suscripcion conoce a muchos locales,
+ademas las subclases no tienen ningun campo por lo que crearia tablas que tengan un ID nomas
+, por lo tanto es preferible ahorrare eso y los JOINS que trae otro tipo de estrategia
+*/
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@DiscriminatorColumn(name = "tipo", length = 1)
+class Local extends EntidadPersistente {
+    nombre
+
+    @Embedded
+    direccion
+}
+
+@Entity
+@DiscriminatorValue("P")
+class Pub extends Local {
+    @ManyToMany
+    @JoinTable(name = "pub_tragos")
+    tragos
+}
+
+@Entity
+@DiscriminatorValue("B")
+class Bar extends Local {
+    @ManyToMany
+    @JoinTable(name = "bar_cervezas")
+    cervezas 
+
+    @ManyToMany
+    @JoinTable(name = "bar_analocholicas")
+    analcoholicas
+
+    @ManyToMany
+    @JoinTable(name = "bar_tragos")
+    tragos
+}
+
+@Entity
+@DiscriminatorValue("C")
+class Cervecería extends Local { 
+    @ManyToMany
+    @JoinTable(name = "cerveceria_cervezas")
+    cervezas
+}
+
+/*Tambien aplico SINGLE_TABLE ya que solo la subclase de cerveza tiene un atributo, entonces a lo
+sumo queda un atributo en NULL, y es ideal para consultas polimorficas ya que la busqueda
+va a tener una lista de bebidas */
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
+@DiscriminatorColumn(name = "tipo", length = 1)
+class Bebida extends EntidadPersistente {
+    nombre
+
+    @Transient
+    alcoholService  //Al ser un servicio no se persiste, no afecta al modelo
+}
+
+@Entity
+@DiscriminatorColumn("C")
+class Cerveza extends Bebida {
+    @Enumerated
+    variedad
+}
+
+@Entity
+@DiscriminatorColumn("T")
+class Trago extends Bebida {
+}
+
+@Entity
+@DiscriminatorColumn("A")
+class Analcohólica extends Bebida {
+}
+
+B)
+1. Este problema se da ya que la operacion es muy costosa, debido a la cantidad de JOINS que se 
+hacen para realizar el ranking, a partir de la Bebida hay que Joinear contra los pedidos y
+hacer un SUM de la cantidad agrupando por bebida, ademas de que se requiere ordenar todo. 
+Mientras mas pedidos se carguen mas veces se va a ejecutar la consulta.
+
+2. Una solucion que podria funcionar es tener la cantidad de veces que fue pedida una bebida
+precalculada como un campo en Bebida, entonces a la hora de hacer el ranking solamente tengo 
+que consultar a la entidad Bebida haciendo un Order By por ese campo. Y para poder mantener
+la consistencia con los nuevos pedidos que se vayan ingresando podria haber un trigger 
+en Pedido que cada vez que se ingrese uno se actualiza el campo cantidad en la bebida
+correspondiente.
