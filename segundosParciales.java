@@ -24,6 +24,7 @@ class Prenda extends EntidadPersistente {
     categoria
 
     @OneToMany
+    @JoinColumn(name = "prenda_id")
     colores
 }
 
@@ -415,10 +416,10 @@ Request que se manda: POST /pedidos   Un nuevo pedido
 
 Se guarda y se redirecciona a elegir el tipo de pedido
 
-GET /tiposPedidos
+GET /tiposPedidos  //MEJOR PONER: GET /pedidos/tipos
 
 metodo mas correcto ya que se modifica parcialmente el pedido
-request: PATCH /pedidos/:id  //o UPDATE tambien podria ser pero solo se modifican ciertos campos
+request: PATCH /pedidos/:id  //o PUT (NO UPDATE) tambien podria ser pero solo se modifican ciertos campos
 
 Por limitacion de formulario: POST /pedido/:id
 
@@ -561,7 +562,7 @@ que consultar a la entidad Bebida haciendo un Order By por ese campo. Y para pod
 la consistencia con los nuevos pedidos que se vayan ingresando podria haber un trigger 
 en Pedido que cada vez que se ingrese uno se actualiza el campo cantidad en la bebida
 correspondiente.
-  
+
 C)
 1. GET /locales/
 Usuario obtenido a traves de la session
@@ -584,4 +585,3 @@ el tipo de suscripcion nomas
 
 por limitacion de formulario: 
 POST /usuario/:id
-
